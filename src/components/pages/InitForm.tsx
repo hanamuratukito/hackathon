@@ -20,7 +20,7 @@ import girl from "@/assets/girl.jpg";
 import cat from "@/assets/cat.jpg";
 import dog from "@/assets/dog.jpg";
 import { useState } from "react";
-import { storeState } from "@/services/goalService";
+import { register } from "@/services/goalService";
 import { useNavigate } from "react-router-dom";
 
 const avatarTypes = [
@@ -51,7 +51,7 @@ function InitForm() {
   const navigate = useNavigate();
 
   const start = async () => {
-    await storeState({
+    await register({
       username,
       avatarType,
       goal: goal + selectedOption,
