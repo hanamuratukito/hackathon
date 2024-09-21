@@ -3,13 +3,16 @@ import Layout from "@/components/Layout";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 import ConfettiExplosion from "react-confetti-explosion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { State, findMe } from "@/services/goalService";
 
 const Home = () => {
   const [achieved, setAchieved] = useState(false);
   const [days, setDays] = useState(1);
   const [quote, setQuote] = useState("");
   const [isExploding, setIsExploding] = useState(false);
+  const [me, setMe] = useState<State | null>(null);
 
   const quotes = [
     "継続は力なり。",
@@ -37,6 +40,11 @@ const Home = () => {
     { name: "脱落者1", avatar: "/public/vite.svg" },
     { name: "脱落者2", avatar: "/public/vite.svg" },
   ];
+
+  useEffect(() => {
+    findMe().then((me) => setMe(me));
+  }, []);
+  console.log(me);
 
   return (
     <Layout>

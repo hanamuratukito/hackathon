@@ -1,4 +1,4 @@
-type State = {
+export type State = {
   username: string;
   avatarType: number;
   goal: string;
@@ -17,5 +17,5 @@ export const findMe = async () => {
 };
 
 export const getState = async () => {
-  return Promise.resolve(data.slice(1));
+  return data.slice(1);
 };
