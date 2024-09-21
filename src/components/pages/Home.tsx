@@ -8,6 +8,7 @@ import boy from "@/assets/boy.jpg";
 import girl from "@/assets/girl.jpg";
 import cat from "@/assets/cat.jpg";
 import dog from "@/assets/dog.jpg";
+import { useNavigate } from "react-router-dom";
 
 const avatarTypes = [
   { id: 1, src: boy },
@@ -23,6 +24,7 @@ const quotes = [
   "努力は裏切らない。",
   "継続こそ成功の鍵。",
 ];
+const MAX_CONTINUOUS_DAYS = 66;
 
 const Home = () => {
   const [isAchieved, setIsAchieved] = useState(false);
@@ -30,29 +32,20 @@ const Home = () => {
   const [isExploding, setIsExploding] = useState(false);
   const [me, setMe] = useState<State | null>(null);
   const [otherMember, setOtherMember] = useState<State[]>([]);
-  const [otherFallenMember, setOtherFallenMember] = useState<State[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       const meData = await findMe();
+      if (!meData) navigate("/init-form");
       setMe(meData);
 
       const otherData = await getState();
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 1);
-      yesterday.setHours(0, 0, 0, 0);
-
-      const isAfterYesterday = (date: Date) => date > yesterday;
-
       setOtherMember(otherData);
-      setOtherFallenMember(
-        otherData.filter((it) => !isAfterYesterday(new Date(it.lastUpdated)))
-      );
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const handleAchieve = () => {
     if (!me) return;
@@ -93,9 +86,11 @@ const Home = () => {
 
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
           <div className="flex gap-2 items-end justify-center">
-            残り<span className="text-3xl font-bold">{me.count}</span>日
+            <span className="text-3xl font-bold">{me.count}</span>
+            日継続中
           </div>
-          <div>12/66 -------</div>
+
+          <div>{`${MAX_CONTINUOUS_DAYS}日の継続で目標達成！！`}</div>
         </section>
 
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
@@ -133,64 +128,5 @@ const Home = () => {
     </Layout>
   );
 };
-
-const MemberList = ({
-  title,
-  members,
-}: {
-  title: string;
-  members: State[];
-}) => (
-  <div className="mt-8">
-    <h2 className="text-xl font-bold text-gray-900 mb-4">{title}</h2>
-    <div className="flex flex-col gap-4">
-      {members.map((member, index) => (
-        <div key={index} className="flex items-center">
-          <Avatar className="w-10 h-10 rounded-full mr-2">
-            <AvatarImage
-              src={avatarTypes.find((it) => it.id === member.avatarType)?.src}
-            />
-            <AvatarFallback />
-          </Avatar>
-          <span className="text-sm font-medium text-gray-700">
-            {member.username}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const FallenMemberList = ({ members }: { members: State[] }) => (
-  <div className="mt-8">
-    <h2 className="text-xl font-bold text-red-600 mb-4">脱落した同志</h2>
-    {members.length === 0 ? (
-      <p className="text-sm text-gray-500">脱落した同志はまだいません</p>
-    ) : (
-      <div className="flex flex-col gap-4">
-        {members.map((member, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Avatar className="w-10 h-10 rounded-full mr-2">
-                <AvatarImage
-                  src={
-                    avatarTypes.find((it) => it.id === member.avatarType)?.src
-                  }
-                />
-                <AvatarFallback />
-              </Avatar>
-              <span className="text-sm font-medium text-gray-700">
-                {member.username}
-              </span>
-            </div>
-            <span className="text-sm text-gray-500">
-              {new Date(member.lastUpdated).toLocaleDateString()}
-            </span>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-);
 
 export default Home;
