@@ -45,9 +45,7 @@ const Home = () => {
 
       const isAfterYesterday = (date: Date) => date > yesterday;
 
-      setOtherMember(
-        otherData.filter((it) => isAfterYesterday(new Date(it.lastUpdated)))
-      );
+      setOtherMember(otherData);
       setOtherFallenMember(
         otherData.filter((it) => !isAfterYesterday(new Date(it.lastUpdated)))
       );
@@ -68,25 +66,69 @@ const Home = () => {
     setTimeout(() => setIsExploding(false), 3000);
   };
 
+  if (!me) return null;
+
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md relative">
-          <h1 className="text-2xl font-bold text-gray-900 font-noto-sans">
-            {isAchieved ? "達成！" : me?.goal}
-          </h1>
-          {isExploding && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <ConfettiExplosion />
+      <div className="flex flex-col gap-4">
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <div className="text-2xl font-bold">{me.goal}</div>
+          <div>
+            {isExploding && (
+              <div className="flex justify-center">
+                <ConfettiExplosion />
+              </div>
+            )}
+            <Button
+              className="w-32 font-bold"
+              type="button"
+              onClick={handleAchieve}
+              disabled={isAchieved}
+            >
+              達成
+            </Button>
+            {isAchieved && <p className="mt-4 text-gray-700">{quote}</p>}
+          </div>
+        </section>
+
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <div className="flex gap-2 items-end justify-center">
+            残り<span className="text-3xl font-bold">{me.count}</span>日
+          </div>
+          <div>12/66 -------</div>
+        </section>
+
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <h2 className="text-lg font-bold text-gray-900">
+            パーティーメンバー
+          </h2>
+          <div className="w-64 mx-auto">
+            <div className="flex flex-col gap-6">
+              {otherMember.map((member, index) => (
+                <div key={index} className="flex items-center">
+                  <Avatar className="w-10 h-10 rounded-full mr-2">
+                    <AvatarImage
+                      src={
+                        avatarTypes.find((it) => it.id === member.avatarType)
+                          ?.src
+                      }
+                    />
+                    <AvatarFallback />
+                  </Avatar>
+                  <div className="flex flex-col gap-1 text-left">
+                    <div className="flex gap-2 items-center">
+                      <span>{member.username}</span>
+                      <div className="bg-emerald-100 text-emerald-700 font-bold text-xs rounded p-1 ">
+                        継続中
+                      </div>
+                    </div>
+                    <span className="text-xs">{member.goal}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-          <Button type="button" onClick={handleAchieve} disabled={isAchieved}>
-            {isAchieved ? `継続${me?.count}日目！` : "達成"}
-          </Button>
-          {isAchieved && <p className="mt-4 text-gray-700">{quote}</p>}
-          <MemberList title="同志" members={otherMember} />
-          <FallenMemberList members={otherFallenMember} />
-        </div>
+          </div>
+        </section>
       </div>
     </Layout>
   );
