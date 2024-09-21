@@ -41,7 +41,7 @@ const states: State[] = [
   {
     username: "えんどう さくら",
     avatarType: 3,
-    goal: "常に上達を目指し取り組んでいる。",
+    goal: "英語学習を1分する",
     count: 3,
     lastUpdated: getDiffDate(-6),
   },
