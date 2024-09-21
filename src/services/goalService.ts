@@ -10,7 +10,7 @@ export type State = {
 
 const getDiffDate = (diff: number) => {
   const date = new Date();
-  date.setDate(diff);
+  date.setDate(date.getDate() + diff);
 
   return date;
 };
@@ -29,7 +29,7 @@ const states: State[] = [
     avatarType: 2,
     goal: "自称「ぶいすぽっ！」の姫。",
     count: 12,
-    lastUpdated: getDiffDate(0),
+    lastUpdated: getDiffDate(-1),
   },
   {
     username: "小雀 とと",
