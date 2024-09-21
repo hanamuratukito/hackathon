@@ -1,10 +1,12 @@
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Layout from "@/components/Layout";
 
-function App() {
+function InitForm() {
   return (
-    <div className="container mx-auto p-4 max-w-[640px]">
+    <Layout>
       <div className="flex flex-col gap-8">
         <div className="flex items-center gap-2">
           <Avatar>
@@ -18,11 +20,13 @@ function App() {
           <Input placeholder="目標" />
         </div>
         <div>
-          <Button>目標開始</Button>
+          <Link to="/">
+            <Button>目標開始</Button>
+          </Link>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 
-export default App;
+export default InitForm;
