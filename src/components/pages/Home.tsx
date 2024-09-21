@@ -31,7 +31,10 @@ function MemberView({ member }: MemberViewProp) {
   return (
     <div key={member.username} className="flex items-center">
       <Avatar className="w-10 h-10 rounded-full mr-2">
-        <AvatarImage src={getAvatarById(member.avatarType)?.src} />
+        <AvatarImage
+          src={getAvatarById(member.avatarType)?.src}
+          className={isContinue ? "" : "grayscale"}
+        />
         <AvatarFallback />
       </Avatar>
       <div className="flex flex-col gap-1 text-left">
@@ -136,7 +139,7 @@ const Home = () => {
 
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
           <h2 className="text-lg font-bold text-gray-900">
-            同日にスタートしたユーザー
+            同日に目標開始したユーザー
           </h2>
           <div className="min-w-64 mx-auto">
             <div className="flex flex-col gap-6">
