@@ -4,18 +4,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useEffect, useState } from "react";
 import { State, findMe, getState, register } from "@/services/goalService";
-import boy from "@/assets/boy.jpg";
-import girl from "@/assets/girl.jpg";
-import cat from "@/assets/cat.jpg";
-import dog from "@/assets/dog.jpg";
 import { useNavigate } from "react-router-dom";
-
-const avatarTypes = [
-  { id: 1, src: boy },
-  { id: 2, src: girl },
-  { id: 3, src: cat },
-  { id: 4, src: dog },
-];
+import { getAvatarById } from "@/services/avatarService";
 
 const quotes = [
   "継続は力なり。",
@@ -24,7 +14,44 @@ const quotes = [
   "努力は裏切らない。",
   "継続こそ成功の鍵。",
 ];
+
+const getRandomQuotes = () => quotes[Math.floor(Math.random() * quotes.length)];
+
 const MAX_CONTINUOUS_DAYS = 66;
+
+type MemberViewProp = {
+  member: State;
+};
+
+function MemberView({ member }: MemberViewProp) {
+  const isContinue =
+    new Date().getTime() - member.lastUpdated.getTime() <
+    1000 * 60 * 60 * 24 * 2; // 2日間
+
+  return (
+    <div key={member.username} className="flex items-center">
+      <Avatar className="w-10 h-10 rounded-full mr-2">
+        <AvatarImage src={getAvatarById(member.avatarType)?.src} />
+        <AvatarFallback />
+      </Avatar>
+      <div className="flex flex-col gap-1 text-left">
+        <div className="flex gap-2 items-center">
+          <span>{member.username}</span>
+          {isContinue ? (
+            <div className="bg-emerald-100 text-emerald-700 font-bold text-xs rounded p-1 ">
+              継続中
+            </div>
+          ) : (
+            <div className="bg-zinc-200 text-zinc-600 font-bold text-xs rounded p-1 ">
+              {member.lastUpdated.toLocaleDateString()}に脱落
+            </div>
+          )}
+        </div>
+        <span className="text-xs">{member.goal}</span>
+      </div>
+    </div>
+  );
+}
 
 const Home = () => {
   const [isAchieved, setIsAchieved] = useState(false);
@@ -41,7 +68,11 @@ const Home = () => {
       setMe(meData);
 
       const otherData = await getState();
-      setOtherMember(otherData);
+      setOtherMember(
+        otherData.sort(
+          (a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime()
+        )
+      );
     };
 
     fetchData();
@@ -54,7 +85,7 @@ const Home = () => {
     register(updatedMe);
     setMe(updatedMe);
     setIsAchieved(true);
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+    setQuote(getRandomQuotes());
     setIsExploding(true);
     setTimeout(() => setIsExploding(false), 3000);
   };
@@ -65,6 +96,13 @@ const Home = () => {
     <Layout>
       <div className="flex flex-col gap-4">
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <div className="flex justify-center items-center">
+            <Avatar className="w-16 h-16 rounded-full mr-2">
+              <AvatarImage src={getAvatarById(me.avatarType)?.src} />
+              <AvatarFallback />
+            </Avatar>
+            <div className="text-xl">{me.username}</div>
+          </div>
           <div className="text-2xl font-bold">{me.goal}</div>
           <div>
             {isExploding && (
@@ -80,46 +118,30 @@ const Home = () => {
             >
               達成
             </Button>
-            {isAchieved && <p className="mt-4 text-gray-700">{quote}</p>}
+            {isAchieved && (
+              <p className="mt-4 text-sm text-zinc-700">{quote}</p>
+            )}
           </div>
         </section>
 
-        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-2">
           <div className="flex gap-2 items-end justify-center">
             <span className="text-3xl font-bold">{me.count}</span>
-            日継続中
+            <span>日継続中</span>
           </div>
-
-          <div>{`${MAX_CONTINUOUS_DAYS}日の継続で目標達成！！`}</div>
+          <div className="text-sm text-zinc-700">
+            {MAX_CONTINUOUS_DAYS}日間の継続で目標達成
+          </div>
         </section>
 
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
           <h2 className="text-lg font-bold text-gray-900">
-            パーティーメンバー
+            同日にスタートしたユーザー
           </h2>
-          <div className="w-64 mx-auto">
+          <div className="min-w-64 mx-auto">
             <div className="flex flex-col gap-6">
-              {otherMember.map((member, index) => (
-                <div key={index} className="flex items-center">
-                  <Avatar className="w-10 h-10 rounded-full mr-2">
-                    <AvatarImage
-                      src={
-                        avatarTypes.find((it) => it.id === member.avatarType)
-                          ?.src
-                      }
-                    />
-                    <AvatarFallback />
-                  </Avatar>
-                  <div className="flex flex-col gap-1 text-left">
-                    <div className="flex gap-2 items-center">
-                      <span>{member.username}</span>
-                      <div className="bg-emerald-100 text-emerald-700 font-bold text-xs rounded p-1 ">
-                        継続中
-                      </div>
-                    </div>
-                    <span className="text-xs">{member.goal}</span>
-                  </div>
-                </div>
+              {otherMember.map((member) => (
+                <MemberView key={member.username} member={member} />
               ))}
             </div>
           </div>

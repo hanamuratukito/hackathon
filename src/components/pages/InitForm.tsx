@@ -15,46 +15,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import boy from "@/assets/boy.jpg";
-import girl from "@/assets/girl.jpg";
-import cat from "@/assets/cat.jpg";
-import dog from "@/assets/dog.jpg";
 import { useState } from "react";
 import { register } from "@/services/goalService";
 import { useNavigate } from "react-router-dom";
-
-const avatarTypes = [
-  {
-    id: 1,
-    src: boy,
-  },
-  {
-    id: 2,
-    src: girl,
-  },
-  {
-    id: 3,
-    src: cat,
-  },
-  {
-    id: 4,
-    src: dog,
-  },
-];
+import { getAvatarById } from "@/services/avatarService";
 
 function InitForm() {
   const [avatarType, setAvatarType] = useState(1);
   const [username, setUsername] = useState("");
   const [goal, setGoal] = useState("");
-  const [selectedOption, setSelectedOption] = useState("1回する");
-
+  const [selectedOption, setSelectedOption] = useState("を1回する");
   const navigate = useNavigate();
+  const showGoalText = goal + selectedOption;
+  const canSubmit = username.length > 0 && goal.length > 0;
 
   const start = async () => {
     await register({
       username,
       avatarType,
-      goal: goal + selectedOption,
+      goal: showGoalText,
       count: 0,
       lastUpdated: new Date(),
     });
@@ -64,51 +43,49 @@ function InitForm() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8">
-        <section className="w-full max-w-sm items-center">
-          <div className="flex flex-col gap-3 w-64">
-            <h2 className="text-lg font-bold">プロフィールを設定しよう</h2>
-            <div className="flex gap-4 items-center">
-              <Avatar className="w-20 h-20">
-                <AvatarImage
-                  src={avatarTypes.find((it) => it.id === avatarType)?.src}
-                />
-                <AvatarFallback></AvatarFallback>
-              </Avatar>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="secondary">
-                    選択
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="flex">
-                  <DropdownMenuItem onClick={() => setAvatarType(1)}>
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={boy} />
-                      <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAvatarType(2)}>
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={girl} />
-                      <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAvatarType(3)}>
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={cat} />
-                      <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAvatarType(4)}>
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={dog} />
-                      <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+      <div className="flex flex-col gap-4">
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <h2 className="text-lg font-bold">プロフィールを設定しよう</h2>
+          <div className="flex gap-4 items-center justify-center w-64 mx-auto">
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={getAvatarById(avatarType)?.src} />
+              <AvatarFallback></AvatarFallback>
+            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="secondary">
+                  選択
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="flex">
+                <DropdownMenuItem onClick={() => setAvatarType(1)}>
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={getAvatarById(1)?.src} />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAvatarType(2)}>
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={getAvatarById(2)?.src} />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAvatarType(3)}>
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={getAvatarById(3)?.src} />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAvatarType(4)}>
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={getAvatarById(4)?.src} />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="flex gap-4 items-center w-64 mx-auto">
             <Input
               id="username"
               placeholder="ユーザー名"
@@ -116,36 +93,39 @@ function InitForm() {
             ></Input>
           </div>
         </section>
-        <section className="w-full max-w-sm items-center">
-          <h2 className="text-lg font-bold">目標を入力しよう</h2>
-          <div className="flex flex-col gap-2">
-            <div className="w-64 flex items-center gap-4">
-              <Input
-                placeholder="目標"
-                onChange={(e) => setGoal(e.target.value)}
-              />
-            </div>
-            <div className="w-64 flex items-center">
-              <Select
-                value={selectedOption}
-                onValueChange={(value) => {
-                  setSelectedOption(value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1回する">1回する</SelectItem>
-                  <SelectItem value="1分する">1分する</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <h2 className="text-lg font-bold">目標を設定しよう</h2>
+          <div className="flex flex-col gap-4 items-center justify-center w-64 mx-auto">
+            <Input
+              placeholder="目標"
+              onChange={(e) => setGoal(e.target.value)}
+            />
+            <Select
+              value={selectedOption}
+              onValueChange={(value) => {
+                setSelectedOption(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="を1回する">を1回する</SelectItem>
+                <SelectItem value="を1分する">を1分する</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </section>
-        <div>
-          <Button onClick={start}>目標開始</Button>
-        </div>
+        <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
+          <span className="text-2xl font-bold">{showGoalText}</span>
+          <Button
+            className="w-32 mx-auto"
+            onClick={start}
+            disabled={!canSubmit}
+          >
+            目標開始
+          </Button>
+        </section>
       </div>
     </Layout>
   );

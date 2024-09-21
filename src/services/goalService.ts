@@ -18,29 +18,29 @@ const getDiffDate = (diff: number) => {
 let me: State | null = JSON.parse(localStorage.getItem(MY_KEY) ?? "null");
 const states: State[] = [
   {
-    username: "花芽 すみれ",
+    username: "たなか たろう",
     avatarType: 1,
-    goal: "爽快感抜群のプレーを見せる",
+    goal: "運動を1分する",
     count: 12,
     lastUpdated: getDiffDate(0),
   },
   {
-    username: "花芽 なずな",
+    username: "さとう はな",
     avatarType: 2,
-    goal: "自称「ぶいすぽっ！」の姫。",
+    goal: "資格の勉強を1分する",
     count: 12,
     lastUpdated: getDiffDate(-1),
   },
   {
-    username: "小雀 とと",
-    avatarType: 3,
-    goal: "いつもまったりとした雰囲気に包まれている。",
+    username: "すずき じろう",
+    avatarType: 4,
+    goal: "腹筋を1回する",
     count: 10,
     lastUpdated: getDiffDate(-3),
   },
   {
-    username: "胡桃 のあ",
-    avatarType: 4,
+    username: "えんどう さくら",
+    avatarType: 3,
     goal: "常に上達を目指し取り組んでいる。",
     count: 3,
     lastUpdated: getDiffDate(-6),
