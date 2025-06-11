@@ -47,9 +47,18 @@ function InitForm() {
     if (!video) return;
 
     const handlePlay = () => console.log("動画再  生開始: play");
-    const handleSeeking = () => console.log("シーク開始: seeking");
-    const handleSeeked = () => console.log("シーク完了: seeked");
     const handleEnded = () => console.log("動画終了: ended");
+
+    const handleSeeking = () => {
+      // Safariバグ回避のため整数に丸め直す
+      const fixedTime = Math.floor(video.currentTime);
+      if (video.currentTime !== fixedTime) {
+        video.currentTime = fixedTime;
+      }
+      console.log("シーク開始: seeking");
+    };
+
+    const handleSeeked = () => console.log("シーク完了: seeked");
 
     video.addEventListener("play", handlePlay);
     video.addEventListener("seeking", handleSeeking);
@@ -140,7 +149,10 @@ function InitForm() {
           </div>
 
           <video ref={videoRef} width="640" height="360" controls>
-            <source src="/src/components/pages/テスト動画.mp4" type="video/mp4" />
+            <source
+              src="/src/components/pages/テスト動画.mp4"
+              type="video/mp4"
+            />
             お使いのブラウザは video タグをサポートしていません。
           </video>
         </section>
