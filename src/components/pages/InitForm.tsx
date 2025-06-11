@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { register } from "@/services/goalService";
 import { useNavigate } from "react-router-dom";
 import { getAvatarById } from "@/services/avatarService";
@@ -40,6 +40,29 @@ function InitForm() {
 
     navigate("/");
   };
+
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = () => console.log("動画再  生開始: play");
+    const handleSeeking = () => console.log("シーク開始: seeking");
+    const handleSeeked = () => console.log("シーク完了: seeked");
+    const handleEnded = () => console.log("動画終了: ended");
+
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("seeking", handleSeeking);
+    video.addEventListener("seeked", handleSeeked);
+    video.addEventListener("ended", handleEnded);
+
+    return () => {
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("seeking", handleSeeking);
+      video.removeEventListener("seeked", handleSeeked);
+      video.removeEventListener("ended", handleEnded);
+    };
+  }, []);
 
   return (
     <Layout>
@@ -115,6 +138,11 @@ function InitForm() {
               </SelectContent>
             </Select>
           </div>
+
+          <video ref={videoRef} width="640" height="360" controls>
+            <source src="/src/components/pages/テスト動画.mp4" type="video/mp4" />
+            お使いのブラウザは video タグをサポートしていません。
+          </video>
         </section>
         <section className="bg-white border rounded p-6 text-center flex flex-col gap-4">
           <span className="text-2xl font-bold">{showGoalText}</span>
